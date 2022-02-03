@@ -1,5 +1,8 @@
 const express = require("express");
 
+// import middleware function for verifying token
+const { authMiddleware } = require("./utils/auth");
+
 // import ApolloServer
 const { ApolloServer } = require("apollo-server-express");
 const { ApolloServerPluginDrainHttpServer } = require("apollo-server-core");
@@ -24,6 +27,7 @@ async function startApolloServer(typeDefs, resolvers) {
   const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
+    context: authMiddleware,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
   // more required logic for integrating with Express
