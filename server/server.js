@@ -8,6 +8,9 @@ const { ApolloServer } = require("apollo-server-express");
 const { ApolloServerPluginDrainHttpServer } = require("apollo-server-core");
 const http = require("http");
 
+// To serve up React front-end code in production
+const path = require("path");
+
 // import our typeDefs and resolvers
 const { typeDefs, resolvers } = require("./schemas");
 
@@ -34,6 +37,15 @@ async function startApolloServer(typeDefs, resolvers) {
   await apolloServer.start();
   // integrate our Apollo server with the Express application as middleware
   apolloServer.applyMiddleware({ app });
+
+  // Serve up static assets
+  if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "../client/build")));
+  }
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client/build/index.html"));
+  });
 
   db.once("open", () => {
     app.listen(PORT, () => {
