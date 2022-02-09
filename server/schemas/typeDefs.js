@@ -30,7 +30,7 @@ const typeDefs = gql`
     thoughtText: String
     createdAt: String
     username: String
-    reactCount: Int
+    reactionCount: Int
     reactions: [Reaction]
   }
 
