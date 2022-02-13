@@ -16,8 +16,18 @@ import SingleThought from "./pages/SingleThought";
 import Profile from "./pages/Profile";
 import Signup from "./pages/Signup";
 
-// Establish a new connection to the GraphQL server using Apollo
 const client = new ApolloClient({
+  // Retrieve token from localStorage before each request is made to GraphQL
+  request: (operation) => {
+    const token = localStorage.getItem("id_token");
+
+    operation.setContext({
+      headers: {
+        authorization: token ? `Bearer ${token}` : "",
+      },
+    });
+  },
+  // Establish a new connection to the GraphQL server using Apollo
   uri: "/graphql",
 });
 
@@ -34,8 +44,10 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
-              {/* ? means parameter is optional */}
-              <Route path="/profile/:username" element={<Profile />} />
+              <Route path="/profile">
+                <Route path=":username" element={<Profile />} />
+                <Route path="" element={<Profile />} />
+              </Route>
               <Route path="/thought/:id" element={<SingleThought />} />
               <Route path="*" element={<NoMatch />} />
             </Routes>
